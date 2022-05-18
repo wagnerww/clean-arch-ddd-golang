@@ -19,5 +19,5 @@ func NewOrder(id string, customerId string, customerName string, Items []OrderIt
 }
 
 func (o *Order) ChangeCustomer(customerId string, customerName string) {
-	o.Customer, _ = NewCustomerOrder(customerId, customerName)
+	o.Customer = NewCustomerOrder(customerId, customerName)
 }

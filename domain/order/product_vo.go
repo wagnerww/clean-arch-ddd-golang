@@ -5,11 +5,11 @@ type ProductOrder struct {
 	Name string
 }
 
-func NewProductOrder(id string, name string) (p ProductOrder, err error) {
+func NewProductOrder(id string, name string) (p ProductOrder) {
 	p = ProductOrder{
 		ID:   id,
 		Name: name,
 	}
 
-	return p, nil
+	return p
 }
