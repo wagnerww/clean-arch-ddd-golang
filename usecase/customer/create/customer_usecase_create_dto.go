@@ -1,4 +1,4 @@
-package usecasecustomer
+package usecaseCustomerCreate
 
 type CustomerInputDto struct {
 	Name        string `json:"name"`

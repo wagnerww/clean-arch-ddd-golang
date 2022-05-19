@@ -1,4 +1,4 @@
-package usecasecustomer
+package usecaseCustomerCreate
 
 import (
 	"log"
