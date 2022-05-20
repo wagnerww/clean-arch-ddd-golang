@@ -1,5 +1,10 @@
 package events
 
-type EventBusEventStoreInterface interface {
-	Send(aggregate string, aggregateId string, action string, payload any)
+type EventStore struct {
+	ID           string `json:"id"`
+	Aggregate    string `json:"aggregate"`
+	AggregateId  string `json:"aggregateId"`
+	Action       string `json:"action"`
+	Payload      any    `json:"payload"`
+	IsSyncNeeded bool   `json:"isSyncNeeded"`
 }

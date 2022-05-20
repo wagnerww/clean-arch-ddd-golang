@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/streadway/amqp"
+	events "github.com/wagnerww/go-clean-arch-implement/infra/queue/bus/event-store"
 )
 
 type EventStoreRabbit struct {
@@ -19,7 +21,15 @@ func NewEventStoreRabbit(ch *amqp.Channel) *EventStoreRabbit {
 
 func (e *EventStoreRabbit) Send(aggregate string, aggregateId string, action string, payload any) {
 
-	body, _ := json.Marshal(payload)
+	event := events.EventStore{
+		ID:          uuid.New().String(),
+		Aggregate:   aggregate,
+		AggregateId: aggregateId,
+		Action:      action,
+		Payload:     payload,
+	}
+
+	body, _ := json.Marshal(event)
 
 	err := e.ch.Publish(
 		"events_direct",

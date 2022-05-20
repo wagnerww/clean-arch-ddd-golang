@@ -1,4 +1,4 @@
-CREATE TABLE clientes (
+CREATE TABLE eventos (
     id uuid PRIMARY KEY,
     nome VARCHAR(255),
     email VARCHAR(255),

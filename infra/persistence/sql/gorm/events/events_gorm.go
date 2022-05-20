@@ -17,7 +17,7 @@ type EventStore struct {
 	AggregateId  string    `gorm:"column:agregado_id"`
 	Action       string    `gorm:"column:acao"`
 	Payload      string    `gorm:"column:payload"`
-	IsSyncNedeed bool      `gorm:"column:necessita_sincronizacao"`
+	IsSyncNeeded bool      `gorm:"column:necessita_sincronizacao"`
 	CreatedAt    time.Time `gorm:"column:criado_em"`
 	UpdatedAt    time.Time `gorm:"column:editado_em"`
 	DeletedAt    time.Time `gorm:"column:apagado_em"`
