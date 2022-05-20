@@ -1,0 +1,28 @@
+version: '3.1'
+
+services: 
+  db:
+    container_name: pg-go-clean
+    image: postgres:alpine
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: 'postgre'
+      POSTGRES_PASSWORD: 'postgre'
+      POSTGRES_DB: 'orders'
+
+  redis:
+    container_name: redis-go-clean
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+
+  rabbitmq:
+    image: 'rabbitmq:3.6-management-alpine'
+    ports:
+      # The standard AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'

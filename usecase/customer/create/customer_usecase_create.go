@@ -3,22 +3,32 @@ package usecaseCustomerCreate
 import (
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/wagnerww/go-clean-arch-implement/domain/customer"
+	events "github.com/wagnerww/go-clean-arch-implement/infra/queue/bus/event-store"
 )
 
 type Create struct {
-	repoCache customer.CustomerRepositoryCacheInterface
+	repoCache          customer.CustomerRepositoryCacheInterface
+	repoDb             customer.CustomerRepositoryInterface
+	eventBusEventStore events.EventBusEventStoreInterface
 }
 
 func NewCreate(
-	rCache customer.CustomerRepositoryCacheInterface) *Create {
+	rCache customer.CustomerRepositoryCacheInterface,
+	repoDb customer.CustomerRepositoryInterface,
+	eventBusEventStore events.EventBusEventStoreInterface,
+) *Create {
 	return &Create{
-		repoCache: rCache,
+		repoCache:          rCache,
+		repoDb:             repoDb,
+		eventBusEventStore: eventBusEventStore,
 	}
 }
 
 func (c *Create) Execute(input CustomerInputDto) (string, error) {
-	cc, err := customer.NewCustomer("123", input.Name, input.PhoneNumber, input.Email)
+	id := uuid.New().String()
+	cc, err := customer.NewCustomer(id, input.Name, input.PhoneNumber, input.Email)
 	cc.Activate()
 
 	if err != nil {
@@ -33,6 +43,14 @@ func (c *Create) Execute(input CustomerInputDto) (string, error) {
 	}
 	log.Println("vai gravar")
 
+	c.eventBusEventStore.Send(
+		"customer",
+		cc.ID,
+		"CREATE",
+		cc,
+	)
+
+	c.repoDb.Create(cc)
 	c.repoCache.Create(cc.ID, cc)
 
 	return cc.ID, nil
