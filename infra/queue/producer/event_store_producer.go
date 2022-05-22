@@ -1,5 +1,5 @@
-package events
+package event_store
 
-type EventBusEventStoreInterface interface {
+type EventStoreProducerInterface interface {
 	Send(aggregate string, aggregateId string, action string, payload any)
 }

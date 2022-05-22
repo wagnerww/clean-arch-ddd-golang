@@ -4,7 +4,7 @@ import (
 	"time"
 
 	messaging "github.com/wagnerww/go-clean-arch-implement/infra/queue/rabbitmq"
-	"github.com/wagnerww/go-clean-arch-implement/infra/queue/rabbitmq/subscribe"
+	eventStore "github.com/wagnerww/go-clean-arch-implement/infra/queue/rabbitmq/consumer/event-store"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	defer rabbitMQConn.Close()
 	defer rabbitMQChannel.Close()
 
-	sub := subscribe.NewEventStoreRabbit(rabbitMQChannel)
+	sub := eventStore.NewEventStoreRabbitSubscribe(rabbitMQChannel)
 
 	sub.Persist()
 

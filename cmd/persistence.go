@@ -10,7 +10,7 @@ import (
 	gormDb "github.com/wagnerww/go-clean-arch-implement/infra/persistence/sql/gorm"
 	customerDBGorm "github.com/wagnerww/go-clean-arch-implement/infra/persistence/sql/gorm/customer"
 	messaging "github.com/wagnerww/go-clean-arch-implement/infra/queue/rabbitmq"
-	eventStorePublish "github.com/wagnerww/go-clean-arch-implement/infra/queue/rabbitmq/publish"
+	eventStorePublish "github.com/wagnerww/go-clean-arch-implement/infra/queue/rabbitmq/producer/event-store"
 	usecaseCustomer "github.com/wagnerww/go-clean-arch-implement/usecase/customer/create"
 	usecaseProduct "github.com/wagnerww/go-clean-arch-implement/usecase/product/create"
 )

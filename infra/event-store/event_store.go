@@ -1,4 +1,4 @@
-package events
+package event_store
 
 type EventStore struct {
 	ID           string `json:"id"`

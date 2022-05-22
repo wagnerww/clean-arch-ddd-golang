@@ -12,7 +12,7 @@ type EventStoreRabbit struct {
 	ch *amqp.Channel
 }
 
-func NewEventStoreRabbit(ch *amqp.Channel) *EventStoreRabbit {
+func NewEventStoreRabbitSubscribe(ch *amqp.Channel) *EventStoreRabbit {
 	return &EventStoreRabbit{
 		ch: ch,
 	}
@@ -37,7 +37,7 @@ func (e *EventStoreRabbit) Persist() {
 	}
 
 	forever := make(chan bool)
-
+	var count = 1
 	go func() {
 		for d := range deliveries {
 
@@ -59,11 +59,13 @@ func (e *EventStoreRabbit) Persist() {
 				})
 			log.Println(err, "Failed to publish a message")*/
 
-			d.Ack(false)
+			d.Ack(true)
+
+			count = count + 1
 		}
 	}()
 
-	log.Printf(" [*] Awaiting RPC requests")
+	log.Printf(" [*] Awaiting RPC requests for EVENT STORE")
 	<-forever
 
 }

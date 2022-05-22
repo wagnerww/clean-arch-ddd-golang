@@ -5,19 +5,19 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/wagnerww/go-clean-arch-implement/domain/customer"
-	events "github.com/wagnerww/go-clean-arch-implement/infra/queue/bus/event-store"
+	producer "github.com/wagnerww/go-clean-arch-implement/infra/queue/producer"
 )
 
 type Create struct {
 	repoCache          customer.CustomerRepositoryCacheInterface
 	repoDb             customer.CustomerRepositoryInterface
-	eventBusEventStore events.EventBusEventStoreInterface
+	eventBusEventStore producer.EventStoreProducerInterface
 }
 
 func NewCreate(
 	rCache customer.CustomerRepositoryCacheInterface,
 	repoDb customer.CustomerRepositoryInterface,
-	eventBusEventStore events.EventBusEventStoreInterface,
+	eventBusEventStore producer.EventStoreProducerInterface,
 ) *Create {
 	return &Create{
 		repoCache:          rCache,
