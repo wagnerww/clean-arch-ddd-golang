@@ -2,20 +2,24 @@ package publish
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 
 	"github.com/google/uuid"
 	"github.com/streadway/amqp"
-	eventStore "github.com/wagnerww/go-clean-arch-implement/infra/event-store"
+	eventStore "github.com/wagnerww/go-clean-arch-implement/domain/event-store"
+	event_store "github.com/wagnerww/go-clean-arch-implement/domain/event-store"
 )
 
 type EventStoreRabbit struct {
-	ch *amqp.Channel
+	ch     *amqp.Channel
+	repoDb event_store.EventStoreRepositoryInterface
 }
 
-func NewEventStoreRabbit(ch *amqp.Channel) *EventStoreRabbit {
+func NewEventStoreRabbit(ch *amqp.Channel, repoDb event_store.EventStoreRepositoryInterface) *EventStoreRabbit {
 	return &EventStoreRabbit{
-		ch: ch,
+		ch:     ch,
+		repoDb: repoDb,
 	}
 }
 
@@ -31,15 +35,25 @@ func (e *EventStoreRabbit) Send(aggregate string, aggregateId string, action str
 
 	body, _ := json.Marshal(event)
 
-	err := e.ch.Publish(
-		"events_direct",
-		"",
-		false,
-		false, amqp.Publishing{
-			ContentType: "application/json",
-			Body:        []byte(body),
-		})
+	var err error
+	if e.ch == nil {
+		err = errors.New("Falha em conexão com RabbitMQ")
+	}
 
-	log.Println("erro_rabbit", err)
+	if err == nil {
+		err = e.ch.Publish(
+			"events_direct",
+			"",
+			false,
+			false, amqp.Publishing{
+				ContentType: "application/json",
+				Body:        []byte(body),
+			})
+	}
+
+	if err != nil {
+		log.Println("erro_rabbit", err)
+		e.repoDb.Create(event)
+	}
 
 }

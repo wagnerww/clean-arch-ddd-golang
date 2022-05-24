@@ -23,7 +23,7 @@ func ConnectDB() *gorm.DB {
 
 	if err != nil {
 		log.Println("falha na comunicação com a base de dados")
-		panic("falha na comunicação com o DB")
+		//panic("falha na comunicação com o DB")
 	}
 
 	log.Println("Conexão com a DB OK")

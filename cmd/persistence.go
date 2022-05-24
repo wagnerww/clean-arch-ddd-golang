@@ -9,6 +9,7 @@ import (
 	productRedisCache "github.com/wagnerww/go-clean-arch-implement/infra/persistence/caching/redis/product"
 	gormDb "github.com/wagnerww/go-clean-arch-implement/infra/persistence/sql/gorm"
 	customerDBGorm "github.com/wagnerww/go-clean-arch-implement/infra/persistence/sql/gorm/customer"
+	eventStoreDBGorm "github.com/wagnerww/go-clean-arch-implement/infra/persistence/sql/gorm/events"
 	messaging "github.com/wagnerww/go-clean-arch-implement/infra/queue/rabbitmq"
 	eventStorePublish "github.com/wagnerww/go-clean-arch-implement/infra/queue/rabbitmq/producer/event-store"
 	usecaseCustomer "github.com/wagnerww/go-clean-arch-implement/usecase/customer/create"
@@ -20,12 +21,14 @@ var ctx = context.Background()
 func main() {
 	time.Local, _ = time.LoadLocation("America/Sao_Paulo")
 
-	rabbitMQChannel, rabbitMQConn := messaging.ConnectRabbitMQ()
+	rabbitMQChannel, rabbitMQConn, err := messaging.ConnectRabbitMQ()
 	redisConn := redisCache.ConnectRedis(ctx)
 	dbConn := gormDb.ConnectDB()
 
-	defer rabbitMQConn.Close()
-	defer rabbitMQChannel.Close()
+	if err == nil {
+		defer rabbitMQConn.Close()
+		defer rabbitMQChannel.Close()
+	}
 
 	repoCacheProduct := productRedisCache.NewProductRepositoryCache(ctx, redisConn)
 	createProduct := usecaseProduct.NewCreate(repoCacheProduct)
@@ -34,7 +37,8 @@ func main() {
 	repoCacheCustomer := customerRedisCache.NewCustomerRepositoryCache(ctx, redisConn)
 	repoDbCustomer := customerDBGorm.NewCustomerRepositoryGorm(dbConn)
 
-	eventBusEventStore := eventStorePublish.NewEventStoreRabbit(rabbitMQChannel)
+	repoEvents := eventStoreDBGorm.NewEventStoreRepositoryGorm(dbConn)
+	eventBusEventStore := eventStorePublish.NewEventStoreRabbit(rabbitMQChannel, repoEvents)
 
 	create := usecaseCustomer.NewCreate(repoCacheCustomer, repoDbCustomer, eventBusEventStore)
 	create.Execute(usecaseCustomer.CustomerInputDto{"Wagner", 123, true, "wagnerricardonet@gmail.com"})

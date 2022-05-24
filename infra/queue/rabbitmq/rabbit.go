@@ -6,16 +6,19 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func ConnectRabbitMQ() (*amqp.Channel, *amqp.Connection) {
+func ConnectRabbitMQ() (channelRabbitMQ *amqp.Channel, connectRabbitMQ *amqp.Connection, err error) {
 	amqpServerURL := "amqp://guest:guest@localhost:5672/"
-	connectRabbitMQ, err := amqp.Dial(amqpServerURL)
+	connectRabbitMQ, err = amqp.Dial(amqpServerURL)
 	if err != nil {
-		panic(err)
+		//panic(err)
+		log.Println("Erro com a conecção com rabbitmq")
+		return
 	}
 
-	channelRabbitMQ, err := connectRabbitMQ.Channel()
+	channelRabbitMQ, err = connectRabbitMQ.Channel()
 	if err != nil {
-		panic(err)
+		log.Println("Erro como channel com o rabbitmq", err)
+		return
 	}
 	//defer connectRabbitMQ.Close()
 
@@ -52,6 +55,6 @@ func ConnectRabbitMQ() (*amqp.Channel, *amqp.Connection) {
 
 	//defer channelRabbitMQ.Close()
 
-	return channelRabbitMQ, connectRabbitMQ
+	return channelRabbitMQ, connectRabbitMQ, err
 
 }

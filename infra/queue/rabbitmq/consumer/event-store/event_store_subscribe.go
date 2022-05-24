@@ -1,20 +1,28 @@
 package subscribe
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"strconv"
 
 	"github.com/streadway/amqp"
+	event_store "github.com/wagnerww/go-clean-arch-implement/domain/event-store"
 )
 
 type EventStoreRabbit struct {
-	ch *amqp.Channel
+	ch     *amqp.Channel
+	repoDb event_store.EventStoreRepositoryInterface
 }
 
-func NewEventStoreRabbitSubscribe(ch *amqp.Channel) *EventStoreRabbit {
+func NewEventStoreRabbitSubscribe(
+	ch *amqp.Channel,
+	repoDb event_store.EventStoreRepositoryInterface,
+) *EventStoreRabbit {
 	return &EventStoreRabbit{
-		ch: ch,
+		ch:     ch,
+		repoDb: repoDb,
 	}
 }
 
@@ -45,6 +53,11 @@ func (e *EventStoreRabbit) Persist() {
 			log.Println(err, "Failed to convert body to integer")
 
 			log.Printf(" [.] fib(%d)", n)
+			var evenStoreEntity event_store.EventStore
+			if err := json.Unmarshal(d.Body, &evenStoreEntity); err != nil {
+				fmt.Println(err)
+			}
+			e.repoDb.Create(evenStoreEntity)
 			//response := fib(n)
 
 			/*err = ch.Publish(
